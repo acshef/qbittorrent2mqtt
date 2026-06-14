@@ -83,7 +83,7 @@ class App(_App[list[dict]]):
 
         parser.add_argument(
             "--host",
-            default=cls.getenv(EnvVar) or DEFAULT_HOST,
+            default=cls.getenv(EnvVar.HOST) or DEFAULT_HOST,
             metavar="HOST",
             help=f"WebUI hostname. Defaults to the value of the {cls.envname(EnvVar.HOST)} environment variable or {DEFAULT_HOST!r} if that's not set",
         )
