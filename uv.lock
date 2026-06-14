@@ -148,7 +148,7 @@ wheels = [
 [[package]]
 name = "x2mqtt"
 version = "0.0.0"
-source = { git = "https://github.com/acshef/x2mqtt.git#afd2b1656d618d06166f7878935e783c0955c38b" }
+source = { git = "https://github.com/acshef/x2mqtt.git#69155c813fd999d29a0eb4bd17bb6efccc3055cb" }
 dependencies = [
     { name = "paho-mqtt" },
     { name = "python-slugify" },

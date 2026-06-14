@@ -36,6 +36,13 @@ class App(_App[list[dict]]):
             DownloadSpeedSensor.from_app(self),
         ]
 
+    def get_discovery_payload(self, entities):
+        payload = super().get_discovery_payload(entities)
+        payload.pop("availability_topic", None)
+        payload["availability"] = [{"topic": self.availability_topic}]
+
+        return payload
+
     def setup_api(self):
         self.session = requests.Session()
         if self.username and self.password:
