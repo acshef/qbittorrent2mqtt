@@ -84,7 +84,7 @@ class TotalTorrentsSensor(_IntegerSensor):
         if isinstance(data, Exception):
             return
 
-        return {"names": sorted(x["name"] for x in data)}
+        return {"torrents": sorted(x["name"] for x in data)}
 
 
 class DownloadingTorrentsSensor(_IntegerSensor):
@@ -101,7 +101,7 @@ class DownloadingTorrentsSensor(_IntegerSensor):
         if isinstance(data, Exception):
             return
 
-        return {"names": sorted(x["name"] for x in data if is_downloading(x))}
+        return {"torrents": sorted(x["name"] for x in data if is_downloading(x))}
 
 
 class _ETASensor(_SelfAvailableSensor, metaclass=abc.ABCMeta):
@@ -146,7 +146,7 @@ class NextETASensor(_ETASensor):
 
         for x in sorted(downloading_torrents, key=self.get_eta):
             # The torrent with the soonest eta is sorted first
-            return {"name": x["name"]}
+            return {"torrent": x["name"]}
 
 
 class FinalETASensor(_ETASensor):
