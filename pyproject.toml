@@ -1,9 +1,9 @@
 [project]
 name = "qbittorrent2mqtt"
-version = "0.2.1"
+version = "0.3.0"
 description = "Grabs data from qBittorrent and exposes via MQTT. Uses Home Assistant discovery."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = ["x2mqtt", "requests>=2.33.1"]
 license = "GPL-3.0"
 license-files = ["LICENSE"]

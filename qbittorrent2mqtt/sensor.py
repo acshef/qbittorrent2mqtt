@@ -64,12 +64,15 @@ class _SelfAvailableSensor(Sensor):
 
 class _IntegerSensor(Sensor):
     def get_discovery_payload(self):
-        return {**super().get_discovery_payload(), "suggested_display_precision": 0}
+        return {
+            **super().get_discovery_payload(),
+            "suggested_display_precision": 0,
+        }
 
 
 class TotalTorrentsSensor(_IntegerSensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, name="Total Torrents", icon=Icon.COUNTER, **kwargs)
+    name = "Total Torrents"
+    icon = Icon.COUNTER
 
     def get_state(self, data):
         if isinstance(data, Exception):
@@ -77,10 +80,16 @@ class TotalTorrentsSensor(_IntegerSensor):
 
         return len(data)
 
+    def get_attributes(self, data):
+        if isinstance(data, Exception):
+            return
+
+        return {"names": sorted(x["name"] for x in data)}
+
 
 class DownloadingTorrentsSensor(_IntegerSensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, name="Downloading Torrents", icon=Icon.COUNTER, **kwargs)
+    name = "Downloading Torrents"
+    icon = Icon.COUNTER
 
     def get_state(self, data):
         if isinstance(data, Exception):
@@ -88,10 +97,15 @@ class DownloadingTorrentsSensor(_IntegerSensor):
 
         return len([x for x in data if is_downloading(x)])
 
+    def get_attributes(self, data):
+        if isinstance(data, Exception):
+            return
+
+        return {"names": sorted(x["name"] for x in data if is_downloading(x))}
+
 
 class _ETASensor(_SelfAvailableSensor, metaclass=abc.ABCMeta):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, device_class=DeviceClass.TIMESTAMP, **kwargs)
+    device_class = DeviceClass.TIMESTAMP
 
     @functools.cached_property
     def local_tz(self) -> datetime.tzinfo:
@@ -119,30 +133,33 @@ class _ETASensor(_SelfAvailableSensor, metaclass=abc.ABCMeta):
 
 
 class NextETASensor(_ETASensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, name="Next ETA", **kwargs)
+    name = "Next ETA"
 
     def aggregate(self, values):
         return min(values)
 
+    def get_attributes(self, data):
+        if isinstance(data, Exception):
+            return
+
+        downloading_torrents = list(x for x in data if is_downloading(x))
+
+        for x in sorted(downloading_torrents, key=self.get_eta):
+            # The torrent with the soonest eta is sorted first
+            return {"name": x["name"]}
+
 
 class FinalETASensor(_ETASensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, name="Final ETA", **kwargs)
+    name = "Final ETA"
 
     def aggregate(self, values):
         return max(values)
 
 
 class ProgressTotalSensor(Sensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            name="Total Progress",
-            unit_of_measurement="%",
-            icon=Icon.PROGRESS_DOWNLOAD,
-            **kwargs,
-        )
+    name = "Total Progress"
+    unit_of_measurement = "%"
+    icon = Icon.PROGRESS_DOWNLOAD
 
     def get_state(self, data):
         if isinstance(data, Exception):
@@ -151,25 +168,23 @@ class ProgressTotalSensor(Sensor):
         if not data:
             return 100
 
-        total = 0
-        progress = 0
+        total = 0  # Bytes
+        progress = 0  # Bytes
 
         for x in data:
-            total += x["total_size"]
-            progress += x["progress"] * x["total_size"]
+            this_total_size = x["total_size"]
+            if this_total_size < 0:
+                continue
+            total += this_total_size
+            progress += x["progress"] * this_total_size
 
         return progress / total * 100
 
 
 class ProgressActiveSensor(Sensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            name="Active Progress",
-            unit_of_measurement="%",
-            icon=Icon.PROGRESS_DOWNLOAD,
-            **kwargs,
-        )
+    name = "Active Progress"
+    unit_of_measurement = "%"
+    icon = Icon.PROGRESS_DOWNLOAD
 
     def get_state(self, data):
         if isinstance(data, Exception):
@@ -194,14 +209,9 @@ class ProgressActiveSensor(Sensor):
 
 
 class DownloadSpeedSensor(Sensor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            name="Download Speed",
-            unit_of_measurement="B/s",
-            device_class=DeviceClass.DATA_RATE,
-            **kwargs,
-        )
+    name = "Download Speed"
+    unit_of_measurement = "B/s"
+    device_class = DeviceClass.DATA_RATE
 
     def get_state(self, data):
         if isinstance(data, Exception):
