@@ -84,7 +84,7 @@ wheels = [
 
 [[package]]
 name = "qbittorrent2mqtt"
-version = "0.2.1"
+version = "0.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "requests" },
@@ -132,8 +132,8 @@ wheels = [
 
 [[package]]
 name = "x2mqtt"
-version = "0.3.3"
-source = { git = "https://github.com/acshef/x2mqtt.git#7d5163bed837ba2cee9241520a2aa6af8a8a9aa9" }
+version = "0.3.4"
+source = { git = "https://github.com/acshef/x2mqtt.git#51f4d116e3196cf032a139108e544289da8cc6cb" }
 dependencies = [
     { name = "paho-mqtt" },
     { name = "python-slugify" },
